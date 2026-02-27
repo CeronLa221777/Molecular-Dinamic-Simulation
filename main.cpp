@@ -12,7 +12,7 @@ int main() {
 
     // condiciones iniciales
     // ejemplo para N = 5
-    std::vector<double> pos_init = {0.0,0.5, 2.0, 3.0, 4.0, 5.0, 6.0,7.0,7.3,10.0 };//Esto se modifica a gusto
+    std::vector<double> pos_init = {0.0, 0.8, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0,7.5, 10.0 };//Esto se modifica a gusto
     for(int i = 0; i < N; i++){
         particles[i].x =pos_init[i]; 
         particles[i].v = 0.0; // es correcto
