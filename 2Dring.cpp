@@ -18,7 +18,7 @@ int main() {
     std::vector<double> pos_init_y(N);
     std::vector<double> theta(N);
     for(int i = 0; i < N; i++){
-        theta[i]= 2.0 * PI * i / N;
+        theta[i]= 2.0 * PI * i / (1.0*N);
     }
     for (int k = 0; k < N; k++){
         pos_init_x[k] = 4.0 * cos(theta[k]);
@@ -47,7 +47,8 @@ int main() {
 
         // Trayectoria partículas
         traj << "\n";
-        traj << "t = " << t << "\n";
+        traj << particles.size() <<"\n";
+        traj << "#t = " << t << "\n";
 
         for(size_t j = 0; j < particles.size(); j++){
              traj << j << " "

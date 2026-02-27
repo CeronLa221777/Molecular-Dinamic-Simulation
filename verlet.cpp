@@ -46,7 +46,7 @@ void computeAccelerations2D(const std::vector<Particle2D>& particles,
             double r2 = dx*dx + dy*dy; // Norma cuadrado del vector relativo
             
             if (r2 < rcut2){
-                double f_scalar = 12.0 * dx / std::pow(r2,7); // soft-core luego de la derivada da elevado a la 14
+                double f_scalar = 12.0  / std::pow(r2,7); // soft-core luego de la derivada da elevado a la 14
                 double fx = f_scalar * dx;
                 double fy = f_scalar * dy;
                 acc_x[i] += fx;// fuerza que ejerce j sobre i
