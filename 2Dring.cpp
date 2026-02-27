@@ -52,7 +52,7 @@ int main() {
         for(size_t j = 0; j < particles.size(); j++){
              traj << j << " "
                   << particles[j].x << " "
-                  << 0.0 << " "
+                  << particles[j].y<< " "
                   << 0.0 << "\n";
         }
 
