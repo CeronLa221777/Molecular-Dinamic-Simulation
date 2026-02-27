@@ -56,7 +56,7 @@ double potentialEnergy2D(const std::vector<Particle2D>& particles)
 
     // Energía de la trampa armónica
     for(const auto& p : particles){
-        U += 0.5 * (p.x * p.x + p.y * p.y );
+        U += 0.5 *0.3* (p.x * p.x + p.y * p.y );
     }
     // Energía por interacción de pares (soft-core)
     for(int i = 0; i < N; i++){
