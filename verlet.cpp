@@ -8,7 +8,7 @@ void computeAccelerations1D(const std::vector<Particle1D>& particles,
 
     // Trampa armónica
     for(int i = 0; i < N; i++)
-        acc[i] = -particles[i].x;
+        acc[i] = -0.3*particles[i].x;
 
     // Interacción por pares
     for(int i = 0; i < N; i++){
@@ -34,8 +34,8 @@ void computeAccelerations2D(const std::vector<Particle2D>& particles,
     double rcut2 = 16;
     // Trampa armónica
     for(int i = 0; i < N; i++){
-        acc_x[i] = -particles[i].x;
-        acc_y[i] = -particles[i].y;
+        acc_x[i] = -0.3*particles[i].x;
+        acc_y[i] = -0.3*particles[i].y;
     }
     // Interacción por pares (soft-core)
     for(int i = 0; i < N; i++){
