@@ -1,0 +1,16 @@
+# Binarios y ejecutables
+simulation
+simulationring
+calculoverletboundary2D
+*.o
+*.exe
+
+# Archivos de datos de trayectorias (PESADOS)
+*.dat
+*.xyz
+
+# Archivos multimedia (Resultados visuales)
+*.mp4
+*.gif
+*.png
+*.jpg
