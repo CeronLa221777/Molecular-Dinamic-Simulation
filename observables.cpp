@@ -13,14 +13,14 @@ double kineticEnergy1D(const std::vector<Particle1D>& particles)
 }
 
 // ---- Energía potencial ----
-double potentialEnergy1D(const std::vector<Particle1D>& particles)
+double potentialEnergy1D(const std::vector<Particle1D>& particles, double k)
 {
     double U = 0.0;
     int N = particles.size();
 
     // Energía de la trampa armónica
     for(const auto& p : particles){
-        U += 0.5 * p.x * p.x;
+        U += 0.5 * k * p.x * p.x;
     }
     // Energía por interacción de pares (soft-core)
     for(int i = 0; i < N; i++){

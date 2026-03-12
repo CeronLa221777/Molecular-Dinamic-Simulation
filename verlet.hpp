@@ -4,12 +4,18 @@
 #include <vector>
 #include "particle.hpp"
 void computeAccelerations1D(const std::vector<Particle1D>& particles,
-                            std::vector<double>& acc);
+                            std::vector<double>& acc,
+                            double xmin, double xmax,
+                            double k);
 void computeAccelerations2D(const std::vector<Particle2D>& particles,
                             std::vector<double>& acc_x,
                             std::vector<double>& acc_y,
                             double k);
-void velocityVerlet1D(std::vector<Particle1D> &particles, double dt);
+void velocityVerlet1D(std::vector<Particle1D> &particles,
+                            double dt,
+                            double k,
+                            double xmin, double xmax,
+                            bool useBoundaries);
 void velocityVerlet2D(std::vector<Particle2D> &particles,
                         double dt,
                         double k,

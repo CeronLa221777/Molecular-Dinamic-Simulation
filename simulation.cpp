@@ -1,4 +1,7 @@
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <iomanip>
 #include <cmath>
 #include <vector>
 #include <fstream>
@@ -68,15 +71,24 @@ int main() {
             particles[i].vy = v_initial * std::sin(theta_i);
         }
         
-        std::cout<<particles[i].x<<std::endl;
+        //std::cout<<particles[i].x<<std::endl;
         
     }
 
-    
+    //------generar nombres automaticamente para los archivos de datos ---------
+    std::stringstream ss;
+    ss << (use_rotation ? "ROT" : "RAD")
+       << "_v" << std::fixed <<std::setprecision(1) << v_initial
+       << (perturbation ? "_pert" : "_clean");
+
+    std::string suffix = ss.str();
+    std::string traj_filename = "trayectoria_" + suffix + ".dat";
+    std::string obs_filename = "observables_" + suffix + ".dat";
+    //-------------------------------------------------------------------------
 
     //guardando los observables
-    std::ofstream traj("trayectoria2DPTchaos.dat"); // Lo mismo que ya teniamos
-    std::ofstream obs("observables2DPTchaos.dat"); // Cambio para obtener y pintar los observables
+    std::ofstream traj(traj_filename); // Lo mismo que ya teniamos
+    std::ofstream obs(obs_filename); // Cambio para obtener y pintar los observables
 
     // encabezado para el archivo de observables
     obs << "# t K U E\n";

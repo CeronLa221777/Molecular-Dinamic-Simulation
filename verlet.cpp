@@ -1,14 +1,16 @@
 #include "verlet.hpp"
 #include <cmath>
 
+constexpr double RCUT2 = 16.0; //radio de cort definido arriba en el codigo
+
 void computeAccelerations1D(const std::vector<Particle1D>& particles,
-                          std::vector<double>& acc) //Nos toca calcular por aparte las aceleraciones para no todo meterlo en el verlet
+                          std::vector<double>& acc, double k) //Nos toca calcular por aparte las aceleraciones para no todo meterlo en el verlet
 {
     int N = particles.size();
 
     // Trampa armónica
     for(int i = 0; i < N; i++)
-        acc[i] = -0.3*particles[i].x;
+        acc[i] = -k*particles[i].x;
 
     // Interacción por pares
     for(int i = 0; i < N; i++){
@@ -16,9 +18,12 @@ void computeAccelerations1D(const std::vector<Particle1D>& particles,
 
             double dx = particles[i].x - particles[j].x; // Vector relativo
             double r2 = dx*dx; // Norma cuadrado del vector relativo
-            double rcut2 = 16;
+            double rcut2 = RCUT2;
             if (r2 < rcut2){
-                double f = 12.0 * dx / std::pow(r2,7); // spft-core luego de la derivada da elevado a la 14
+                double r4 = r2 * r2;
+                double r6 = r4 * r2;
+                double r14 = r6 * r6 *r2;
+                double f = 12.0 * dx / r14; // spft-core luego de la derivada da elevado a la 14
                 acc[i] += f;// fuerza que ejerce j sobre i
                 acc[j] -= f;// línea que hace que no tengamos cálculos duplicados, fuerza que recibe j de i por tecera ley de newton
             }
@@ -26,13 +31,14 @@ void computeAccelerations1D(const std::vector<Particle1D>& particles,
         }
     }
 }
+
 void computeAccelerations2D(const std::vector<Particle2D>& particles,
                             std::vector<double>& acc_x,
                             std::vector<double>& acc_y,
                             double k) //Nos toca calcular por aparte las aceleraciones para no todo meterlo en el verlet
 {
     int N = particles.size();
-    double rcut2 = 16;
+    double rcut2 = RCUT2;
     // Trampa armónica
     for(int i = 0; i < N; i++){
         acc_x[i] = -k*particles[i].x;
@@ -47,7 +53,10 @@ void computeAccelerations2D(const std::vector<Particle2D>& particles,
             double r2 = dx*dx + dy*dy; // Norma cuadrado del vector relativo
             
             if (r2 < rcut2){
-                double f_scalar = 12.0  / std::pow(r2,7); // soft-core luego de la derivada da elevado a la 14
+                double r4 = r2 * r2;
+                double r6 = r4 * r2;
+                double r14 = r6 * r6 *r2;
+                double f_scalar = 12.0  / r14; // soft-core luego de la derivada da elevado a la 14
                 double fx = f_scalar * dx;
                 double fy = f_scalar * dy;
                 acc_x[i] += fx;// fuerza que ejerce j sobre i
@@ -62,18 +71,24 @@ void computeAccelerations2D(const std::vector<Particle2D>& particles,
     }
 }
 
-void velocityVerlet1D(std::vector<Particle1D>& particles, double dt)
+void velocityVerlet1D(std::vector<Particle1D>& particles, double dt,
+                        double k, double xmin, double xmax,
+                        bool useBoundaries)
 {
     int N = particles.size();
     std::vector<double> acc(N);
 
-    computeAccelerations1D(particles, acc); // Calculamos aceleración en configuración "inicial"
+    computeAccelerations1D(particles, acc, k); // Calculamos aceleración en configuración "inicial"
     for(int i = 0; i < N; i++){
         particles[i].v += 0.5 * acc[i] * dt;// afectamos la velocidad de la partícula
         particles[i].x += particles[i].v * dt;// corregimos la posición 
     }
 
-    computeAccelerations1D(particles, acc); // Calculamos la aceleración con la nueva configuración de posiciones
+    if (useBoundaries){
+        applyReflectiveBC1D(particles, xmin, xmax);     //Checkeamos condicion: agregar condiciones de frontera
+    }
+
+    computeAccelerations1D(particles, acc, k); // Calculamos la aceleración con la nueva configuración de posiciones
 
     for(int i = 0; i < N; i++){
         particles[i].v += 0.5 * acc[i] * dt; // Nueva velocidad de la partícula
