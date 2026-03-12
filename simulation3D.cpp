@@ -15,7 +15,11 @@ int main() {
     int N = 50;                     // mas particulas para comportamiento mas interesante
     
     //condiciones experimento
-    double k_harmonic = 0.0;       //poner en 0.0 para remover trampa armonica (mesa de pool)
+    std::vector<double> k_harmonic(3, 0.0);      //Vector de acoplamientos
+    // Asignar manualmente cada componente
+    k_harmonic[0] = 0.0;  // componente x
+    k_harmonic[1] = 0.0;  // componente y
+    k_harmonic[2] = 0.0; // componente z
     double radius = 7.0;           //radio de la esfera a la que se ajustaran las particulas 
     double v_initial = 2.0;        //velocidad inicial de las particulas
 
