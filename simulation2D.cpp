@@ -12,22 +12,22 @@
 
 int main() {
     constexpr double PI = 3.14159265358979323846;
-    int N = 10;                     // Número de partículas deben ser 10
+    int N = 25;                     // Número de partículas deben ser 10
     
     //condiciones experimento
     double k_harmonic = 0.0;       //poner en 0.0 para remover trampa armonica (mesa de pool)
-    double radius = 4.0;           //radio al que se ajustaran las particulas 
+    double radius = 7.0;           //radio al que se ajustaran las particulas 
     double v_initial = 2.0;        //velocidad inicial de las particulas
 
     //switches
     bool enable_walls = true;      //activar/desactivar condiciones de frontera reflectivas
-    bool use_rotation = true;      //true: particulas rotan al rededor del origen/false: particulas son disparadas hacia afuera 
-    bool perturbation = true;      //activar/desactivar el cambio en condiciones iniciales
+    bool use_rotation = false;      //true: particulas rotan al rededor del origen/false: particulas son disparadas hacia afuera 
+    bool perturbation = false;      //activar/desactivar el cambio en condiciones iniciales
 
 
     //condiciones de frontera
-    double x_min = -7.0, x_max = 7.0;
-    double y_min = -7.0, y_max = 7.0;
+    double x_min = -10.0, x_max = 10.0;
+    double y_min = -10.0, y_max = 10.0;
 
     //intervalo de integracion y numero de pasos
     double dt = 0.001;              //paso de tiempo
