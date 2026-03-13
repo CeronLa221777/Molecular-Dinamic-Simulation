@@ -6,88 +6,101 @@
 #include <vector>
 #include <fstream>
 #include <random>
-#include "particle.hpp"
 #include "verlet.hpp"
 #include "observables.hpp"
 
 int main() {
     constexpr double PI = 3.14159265358979323846;
-    int N = 50;                     // mas particulas para comportamiento mas interesante
-    
-    //condiciones experimento
-    std::vector<double> k_harmonic(3, 0.0);      //Vector de acoplamientos
-    // Asignar manualmente cada componente
-    k_harmonic[0] = 0.0;  // componente x
-    k_harmonic[1] = 0.0;  // componente y
-    k_harmonic[2] = 0.0; // componente z
-    double radius = 7.0;           //radio de la esfera a la que se ajustaran las particulas 
-    double v_initial = 2.0;        //velocidad inicial de las particulas
+    int N = 10;                     // número de partículas
+    double v_initial = 2.0;         // velocidad inicial
+    double radius = 7.0;            // radio esfera 3D
 
-    //switches
-    bool enable_walls = true;      //activar/desactivar condiciones de frontera reflectivas
-    bool use_rotation = true;      //true: particulas rotan al rededor del origen/false: particulas son disparadas hacia afuera 
-    bool perturbation = false;      //activar/desactivar el cambio en condiciones iniciales
+    // Switch para elegir 1D o 3D
+    bool use_1D = true;             // true = 1D en x, false = 3D esfera
+    bool enable_walls = false;      // paredes reflectivas
+    bool use_rotation = false;      // rotación 3D
+    bool perturbation = false;      // perturbación en posiciones
 
+    // Condiciones de frontera
+    double x_min=-10.0, x_max=10.0;
+    double y_min=-10.0, y_max=10.0;
+    double z_min=-10.0, z_max=10.0;
 
-    //condiciones de frontera
-    double x_min = -10.0, x_max = 10.0;
-    double y_min = -10.0, y_max = 10.0;
-    double z_min = -10.0, z_max = 10.0;
+    // Paso temporal
+    double dt = 0.001;
+    int steps = 30000;
 
+    // Acoplamientos
+    std::vector<double> k_harmonic = {0.3, 0.3, 0.3};  // solo x tiene fuerza
 
-    //intervalo de integracion y numero de pasos
-    double dt = 0.001;              //paso de tiempo
-    int steps = 30000;              //deben ser 30 mil
+    // Vector de partículas
     std::vector<Particle3D> particles(N);
 
-    //generador pequeña perturbacion de la posicion 
+    // Perturbación aleatoria
     double noise_amp = 0.2;
     std::mt19937 gen(42);
-    std::uniform_real_distribution<double> dist(-noise_amp,noise_amp);
+    std::uniform_real_distribution<double> dist(-noise_amp, noise_amp);
 
-    //poner las particulas en puntos al rededor de una esfera
-    for(int i = 0; i < N; i++){
-        //calcular posicion angular
-        double phi = std::acos(1.0-2.0 * (i + 0.5) / (double)N);
-        double theta = std::sqrt(N * PI) * phi;
+    // Variables auxiliares 1D
+    std::vector<double> pos_init(N);
+    double start = -3.5;
+    double step = 1.0;
 
-        double base_x = radius * std::sin(phi) * std::cos(theta);
-        double base_y = radius * std::sin(phi) * std::sin(theta);
-        double base_z = radius * std::cos(phi);
-    
-        //aplica perturbacion a la posicion si perturbation = true
-        if (perturbation){
-            particles[i].x = base_x + dist(gen);
-            particles[i].y = base_y + dist(gen);
-            particles[i].z = base_z + dist(gen);
+    for(int i=0; i<N; i++){
+        if(use_1D){
+            // === Inicialización 1D ===
+            if(i==0) pos_init[i] = -8.0;
+            else pos_init[i] = start + (i-1)*step;
+
+            particles[i].x = pos_init[i];
+            particles[i].y = 0.0;
+            particles[i].z = 0.0;
+
+            particles[i].vx = 0.0;
+            particles[i].vy = 0.0;
+            particles[i].vz = 0.0;
         } else {
-            particles[i].x = base_x;
-            particles[i].y = base_y;
-            particles[i].z = base_z;
-        }
-        
-        //definicion de velocidades
-        if (use_rotation){
-            //rotacion pura alrededor del eje z
-            //manteniendo la magnitud v_inicial por medio de normalizacion en el plano xy
-            double r_planar = std::sqrt(base_x*base_x + base_y*base_y);
-            if (r_planar > 0){
-                particles[i].vx = -v_initial * (base_y / r_planar);
-                particles[i].vy =  v_initial * (base_x / r_planar);
-                particles[i].vz = 0.0; //se mantiene la altura z
+            // === Inicialización 3D esfera ===
+            double phi = std::acos(1.0-2.0 * (i + 0.5) / (double)N);
+            double theta = std::sqrt(N * PI) * phi;
+
+            double base_x = radius * std::sin(phi) * std::cos(theta);
+            double base_y = radius * std::sin(phi) * std::sin(theta);
+            double base_z = radius * std::cos(phi);
+
+            if(perturbation){
+                particles[i].x = base_x + dist(gen);
+                particles[i].y = base_y + dist(gen);
+                particles[i].z = base_z + dist(gen);
             } else {
-                particles[i].vx = particles[i].vy = particles[i].vz = 0.0;
+                particles[i].x = base_x;
+                particles[i].y = base_y;
+                particles[i].z = base_z;
             }
-        } else {
-            //disparo radial (desde el centro hacia afuera)
-            double mag = std::sqrt(base_x*base_x + base_y*base_y + base_z*base_z);
-            particles[i].vx = v_initial * (base_x) / mag; 
-            particles[i].vy = v_initial * (base_y) / mag;
-            particles[i].vz = v_initial * (base_z) / mag;
+
+            if(use_rotation){
+                double r_planar = std::sqrt(base_x*base_x + base_y*base_y);
+                if(r_planar > 1e-12){
+                    particles[i].vx = -v_initial * base_y / r_planar;
+                    particles[i].vy =  v_initial * base_x / r_planar;
+                    particles[i].vz = 0.0;
+                } else {
+                    particles[i].vx = particles[i].vy = particles[i].vz = 0.0;
+                }
+            } else {
+                double mag = std::sqrt(base_x*base_x + base_y*base_y + base_z*base_z);
+                if(mag > 1e-12){
+                    particles[i].vx = v_initial * base_x / mag;
+                    particles[i].vy = v_initial * base_y / mag;
+                    particles[i].vz = v_initial * base_z / mag;
+                } else {
+                    particles[i].vx = particles[i].vy = particles[i].vz = 0.0;
+                }
+            }
         }
-        
-        //std::cout<<particles[i].x<<std::endl;
     }
+
+
 
     //------generar nombres automaticamente para los archivos de datos ---------
     std::stringstream ss;
@@ -96,7 +109,7 @@ int main() {
        << (perturbation ? "_pert" : "_clean");
 
     std::string suffix = ss.str();
-    std::string traj_filename = "trayectoria_" + suffix + ".dat";
+    std::string traj_filename = "trayectoria_" + suffix + ".xyz";
     std::string obs_filename = "observables_" + suffix + ".dat";
     //-------------------------------------------------------------------------
 

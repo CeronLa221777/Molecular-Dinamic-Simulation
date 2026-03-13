@@ -15,7 +15,7 @@ double kineticEnergy3D(const std::vector<Particle3D>& particles)
     return K;
 }
 
-double potentialEnergy3D(const std::vector<Particle3D>& particles,const std::vector&<double>& k)
+double potentialEnergy3D(const std::vector<Particle3D>& particles,const std::vector<double>& k)
 {
     double U = 0.0;
     int N = particles.size();

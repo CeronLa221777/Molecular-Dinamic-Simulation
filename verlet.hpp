@@ -17,12 +17,12 @@ void computeAccelerations3D(const std::vector<Particle3D>& particles,
                             std::vector<double>& acc_x,
                             std::vector<double>& acc_y,
                             std::vector<double>& acc_z,
-                            const std::vector&<double>& k);
+                            const std::vector<double>& k);
 
 //definicion de función para el algoritmo velocity verlet
 void velocityVerlet3D(std::vector<Particle3D> &particles,
                         double dt,
-                        double k,
+                        const std::vector<double>& k,
                         double xmin, double xmax,
                         double ymin, double ymax,
                         double zmin, double zmax,

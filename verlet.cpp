@@ -9,7 +9,7 @@ void computeAccelerations3D(const std::vector<Particle3D>& particles,
                             std::vector<double>& acc_x,
                             std::vector<double>& acc_y,
                             std::vector<double>& acc_z,
-                            const std::vector&<double>& k) //Nos toca calcular por aparte las aceleraciones para no todo meterlo en el verlet
+                            const std::vector<double>& k) //Nos toca calcular por aparte las aceleraciones para no todo meterlo en el verlet
 {
 
     int N = particles.size();
@@ -57,7 +57,7 @@ void computeAccelerations3D(const std::vector<Particle3D>& particles,
 
 //implementacion velocity verlet para las diferentes dimensiones
 void velocityVerlet3D(std::vector<Particle3D>& particles, double dt,
-                        double k, double xmin, double xmax,
+                        const std::vector<double>& k, double xmin, double xmax,
                                   double ymin, double ymax,
                                   double zmin, double zmax,
                                 bool useBoundaries)
@@ -92,59 +92,6 @@ void velocityVerlet3D(std::vector<Particle3D>& particles, double dt,
     }
 }
 
-//aplicar las condiciones de frontera
-void applyReflectiveBC1D(std::vector<Particle1D>& particles,
-                         double xmin,
-                         double xmax)
-{
-    for (auto& p : particles) {
-
-        // pared izquierda
-        if (p.x < xmin) {
-            p.x = 2.0 * xmin - p.x;  // reflejar posicion
-            p.v = -p.v;              // invertir velocidad
-        }
-
-        // pared derecha
-        if (p.x > xmax) {
-            p.x = 2.0 * xmax - p.x;  // reflejar posicion
-            p.v = -p.v;              // invertir velocidad
-        }
-    }
-}
-
-//aplica condiciones de frontera reflectivas 
-void applyReflectiveBC2D(std::vector<Particle2D>& particles,
-                         double xmin, double xmax,
-                         double ymin, double ymax)
-{
-    for (auto& p : particles) {
-
-        // pared izquierda
-        if (p.x < xmin) {
-            p.x = 2.0 * xmin - p.x;
-            p.vx = -p.vx;
-        }
-
-        // pared derecha
-        if (p.x > xmax) {
-            p.x = 2.0 * xmax - p.x;
-            p.vx = -p.vx;
-        }
-
-        // pared inferior
-        if (p.y < ymin) {
-            p.y = 2.0 * ymin - p.y;
-            p.vy = -p.vy;
-        }
-
-        // pared superior
-        if (p.y > ymax) {
-            p.y = 2.0 * ymax - p.y;
-            p.vy = -p.vy;
-        }
-    }
-}
 
 void applyReflectiveBC3D(std::vector<Particle3D>& particles,
                          double xmin, double xmax,
